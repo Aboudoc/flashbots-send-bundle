@@ -8,10 +8,16 @@ async function main() {
     const authSigner = new ethers.Wallet(PRIVATE_KEY)
     // add a signer to send transaction from
     // add a tx
-    const provider = new ethers.providers.JsonRpcProvider(GOERLI_RPC_URL)
+    const provider = new ethers.getDefaultProvider("goerli")
+
+    //for mainnet
+    // const provider = new ethers.providers.JsonRpcProvider(MAINNET_RPC_URL)
+
     const flashbotsProvider = await FlashbotsBundleProvider.create(
         provider,
-        authSigner
+        authSigner,
+        "https://relay-goerli.flashbots.net",
+        "goerli"
     )
 
     // Create Bundle
