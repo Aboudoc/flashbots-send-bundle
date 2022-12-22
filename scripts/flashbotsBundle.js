@@ -19,16 +19,24 @@ async function main() {
     const minTimestamp = await provider.getBlock(blockNumber).timestamp
     const maxTimestamp = minTimestamp + 120
 
-    const signBundle = await flashbotsProvider.signBundle([
+    const signedBundle = flashbotsProvider.signBundle([
         {
-            signer: SOME_SIGNER_TO_SEND_FROM,
-            transaction: SOME_TRANSACTION_TO_SEND,
+            signedTransaction: SIGNED_ORACLE_UPDATE_FROM_PENDING_POOL, // serialized signed transaction hex
+        },
+        {
+            signer: wallet, // ethers signer
+            transaction: transaction, // ethers populated transaction object
         },
     ])
 
     const bundleReceipt = await flashbotsProvider.sendRawBundle(
-        signBundle,
-        TARGET_BLOCK_NUMBER
+        signedBundle, // bundle we signed above
+        targetBlockNumber, // block number at which this bundle is valid
+        {
+            minTimestamp, // optional minimum timestamp at which this bundle is valid (inclusive)
+            maxTimestamp, // optional maximum timestamp at which this bundle is valid (inclusive)
+            revertingTxHashes: [tx1, tx2], // optional list of transaction hashes allowed to revert. Without specifying here, any revert invalidates the entire bundle.
+        }
     )
 }
 
